@@ -38,8 +38,15 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy $(TargetPath) &quot;F:\Steam Games\steamapps\common\Lethal Company\BepInEx\plugins\&quot;" />
-  </Target>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <!-- Copy DLL to game directory for auto testing -->
+        <Exec Command="copy $(TargetPath) &quot;F:\Steam Games\steamapps\common\Lethal Company\BepInEx\plugins\&quot;" />
+
+        <!-- Copy items to package location for easy packaging -->
+        <Exec Command="copy $(TargetPath) &quot;..\PACKAGED\FlashlightFix\&quot;" />
+        <Exec Command="copy icon.png &quot;..\PACKAGED\FlashlightFix\&quot;" />
+        <Exec Command="copy manifest.json &quot;..\PACKAGED\FlashlightFix\&quot;" />
+        <Exec Command="copy README.md &quot;..\PACKAGED\FlashlightFix\&quot;" />
+    </Target>
 
 </Project>
