@@ -26,6 +26,12 @@ If this mod does <i>not</i> fix the extra described issues, I will do my best to
 # Changelog
 
 <ul>
+	<li><b>v1.0.2</b> - Fixing my fixes?</li>
+	<ul>
+		<li>Attempting to fix some networking bugs I introduced in the minor fixes from 1.0.1.</li>
+		<li>Consolidated the previous three config settings into one - it was too confusing to mix them.</li>
+	</ul>
+	&nbsp;
 	<li><b>v1.0.1</b> - More fixes</li>
 	<ul>
 		<li>Fixed the helmet light (pocketed flashlight) turning off when picking up an additional inactive flashlight.</li>

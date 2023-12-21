@@ -21,8 +21,13 @@ namespace FlashlightFix.Patches
         [HarmonyPostfix]
         private static void DiscardItem(FlashlightItem __instance)
         {
+            if (!__instance.IsOwner)
+            {
+                return;
+            }
+
             // If there is a flashlight being used in the player's inventory, turn the helmet light back on (only happens when keeping helmet light on)
-            if (Plugin.KeepHelmetLight.Value)
+            if (Plugin.OnlyOneLight.Value)
             {
                 // Cache the reflection info
                 if (_previousPlayerField == null)
@@ -36,7 +41,9 @@ namespace FlashlightFix.Patches
                 {
                     if (player.ItemSlots[i] is FlashlightItem flashlight && flashlight.isBeingUsed)
                     {
-                        player.allHelmetLights[flashlight.flashlightTypeID].enabled = true;
+                        Plugin.MLS.LogInfo($"Flashlight ID {flashlight.GetInstanceID()} pocketing ON after a discard");
+                        flashlight.isBeingUsed = true;
+                        flashlight.PocketItem();
                         break;
                     }
                 }
@@ -48,23 +55,25 @@ namespace FlashlightFix.Patches
         private static void SwitchToItemSlot(PlayerControllerB __instance, int slot)
         {
             // If the player already has an active flashlight when picking up a new INACTIVE one, turn the helmet lamp back on (if configured)
-            if (Plugin.KeepHelmetLight.Value && __instance.ItemSlots[slot] is FlashlightItem slotFlashlight && !slotFlashlight.isBeingUsed)
+            if (Plugin.OnlyOneLight.Value && __instance.ItemSlots[slot] is FlashlightItem slotFlashlight && !slotFlashlight.isBeingUsed)
             {
                 for (int i = 0; i < __instance.ItemSlots.Length; i++)
                 {
                     // Find any other active flashlights in our inventory
                     if (i != slot && __instance.ItemSlots[i] is FlashlightItem otherFlashlight && otherFlashlight.isBeingUsed)
                     {
-                        // If the new one should auto toggle, and it still has batteries, turn it on (the old one will have been toggled off by native code)
-                        if (Plugin.OnlyOneLight.Value && Plugin.AutoSwitchToNew.Value && !slotFlashlight.insertedBattery.empty)
+                        // If the new one still has batteries, turn it on (the old one will have been toggled off by native code)
+                        if (!slotFlashlight.insertedBattery.empty)
                         {
-                            slotFlashlight.SwitchFlashlight(true);
+                            Plugin.MLS.LogInfo($"Flashlight ID {slotFlashlight.GetInstanceID()} using ON after switching to item slot");
+                            slotFlashlight.UseItemOnClient(true);
                         }
                         // Otherwise, turn the helmet lamp of the old one back on
                         else
                         {
-                            __instance.allHelmetLights[otherFlashlight.flashlightTypeID].enabled = true;
-                            otherFlashlight.usingPlayerHelmetLight = true;
+                            Plugin.MLS.LogInfo($"Flashlight ID {otherFlashlight.GetInstanceID()} pocketing ON after switching to item slot");
+                            otherFlashlight.isBeingUsed = true;
+                            otherFlashlight.PocketItem();
                         }
 
                         break;
@@ -77,29 +86,25 @@ namespace FlashlightFix.Patches
         [HarmonyPrefix]
         private static void SwitchFlashlight(FlashlightItem __instance, bool on)
         {
+            if (!__instance.IsOwner)
+            {
+                return;
+            }
+
             // Skip this if the user does not want either configurable fix
-            if (on && (Plugin.KeepHelmetLight.Value || Plugin.OnlyOneLight.Value))
+            if (on && Plugin.OnlyOneLight.Value)
             {
                 // If we are turning on a flashlight, make sure we turn off all player helmet lights since one may have been on from the above fix
                 foreach (var flashlight in __instance.playerHeldBy.ItemSlots.OfType<FlashlightItem>())
                 {
-                    if (flashlight == __instance)
+                    if (flashlight == __instance || !flashlight.isBeingUsed)
                     {
                         continue;
                     }
 
-                    // If we are not configured to care about helmet lights, skip this extra code
-                    if (Plugin.KeepHelmetLight.Value)
-                    {
-                        flashlight.usingPlayerHelmetLight = false;
-                        __instance.playerHeldBy.allHelmetLights[flashlight.flashlightTypeID].enabled = false;
-                    }
-
-                    // Also make sure no other flashlight is on (if configured)
-                    if (Plugin.OnlyOneLight.Value)
-                    {
-                        flashlight.SwitchFlashlight(false);
-                    }
+                    Plugin.MLS.LogInfo($"Flashlight ID {flashlight.GetInstanceID()} pocketing OFF after turning on flashlight");
+                    flashlight.isBeingUsed = false;
+                    flashlight.PocketItem();
                 }
             }
         }
