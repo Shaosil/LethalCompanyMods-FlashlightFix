@@ -6,7 +6,7 @@ This mod <b>definitely</b> fixes the following issues:
 	<li>The flashlight toggling on or off when being placed in the ship cupboard (and certain other "E" interactions.)</li>
 	<li>A flashlight/helmet light turning off when picking up an additional inactive flashlight.</li>
 	<ul>
-		<li>It will now keep the helmet lamp on from the previous flashlight when picking up the new flashlight. This behavior may be disabled in the config.</li>
+		<li>It will now turn on the new flashlight, and turn off the old one. If the new one is out of batteries, the old one will stay on. This behavior may be disabled in the config.</li>
 	</ul>
 	<li>More than one flashlight could have been active at the same time, leading to confusion and out of sync helmet lights when switching between them.</li>
 	<ul>
@@ -26,7 +26,13 @@ If this mod does <i>not</i> fix the extra described issues, I will do my best to
 # Changelog
 
 <ul>
-	<li><b>v1.0.2</b> - Fixing my fixes?</li>
+	<li><b>v1.0.3</b> - Fixing more of my fixes</li>
+	<ul>
+		<li>Using the inverse teleporter while holding an active flashlight kept the beam on the player after being teleported.</li>
+		<li>Other players could not see a secondary flashlight turn on when picking one up for the first time, if the already-held flashlight was active.</li>
+		<li>Updated the logging calls to be debug level instead of info.</li>
+	</ul>
+	<li><b>v1.0.2</b> - Fixing my fixes</li>
 	<ul>
 		<li>Attempting to fix some networking bugs I introduced in the minor fixes from 1.0.1.</li>
 		<li>Consolidated the previous three config settings into one - it was too confusing to mix them.</li>

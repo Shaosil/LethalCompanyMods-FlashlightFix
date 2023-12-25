@@ -24,7 +24,7 @@ namespace FlashlightFix
             Harmony.CreateAndPatchAll(typeof(PlayerControllerBPatch));
             MLS.LogInfo("PlayerControllerB patched.");
 
-            MLS.LogInfo($"{Metadata.PLUGIN_NAME} fully loaded.");
+            MLS.LogInfo($"{Metadata.PLUGIN_NAME} v{Metadata.VERSION} fully loaded.");
         }
     }
 }

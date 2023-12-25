@@ -4,6 +4,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <Configurations>Debug;Release;Deploy</Configurations>
         <PackageDir>..\PACKAGED\$(MSBuildProjectName)</PackageDir>
+        <GamePath>F:\Steam Games\steamapps\common\Lethal Company\BepInEx\plugins\</GamePath>
     </PropertyGroup>
 
     <ItemGroup>
@@ -41,8 +42,8 @@
     </ItemGroup>
 
     <Target Name="CopyDLLToGame" AfterTargets="PostBuildEvent" Condition="$(Configuration) != 'Debug'">
-        <Message Text="Copying DLL to game directory..." Importance="high" />
-        <Exec Command="copy $(TargetPath) &quot;F:\Steam Games\steamapps\common\Lethal Company\BepInEx\plugins\&quot;" />
+        <Message Text="Copying DLL to $(GamePath)..." Importance="high" />
+        <Exec Command="copy $(TargetPath) &quot;$(GamePath)&quot;" />
     </Target>
 
     <Target Name="ZipMod" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Deploy'">
