@@ -32,6 +32,7 @@ If this mod does <i>not</i> fix the extra described issues, I will do my best to
 		<li>Other players could not see a secondary flashlight turn on when picking one up for the first time, if the already-held flashlight was active.</li>
 		<li>Updated the logging calls to be debug level instead of info.</li>
 	</ul>
+	&nbsp;
 	<li><b>v1.0.2</b> - Fixing my fixes</li>
 	<ul>
 		<li>Attempting to fix some networking bugs I introduced in the minor fixes from 1.0.1.</li>
