@@ -24,6 +24,9 @@ namespace FlashlightFix
             Harmony.CreateAndPatchAll(typeof(PlayerControllerBPatch));
             MLS.LogInfo("PlayerControllerB patched.");
 
+            Harmony.CreateAndPatchAll(typeof(FlashlightItemPatch));
+            MLS.LogInfo("FlashlightItem patched.");
+
             MLS.LogInfo($"{Metadata.PLUGIN_NAME} v{Metadata.VERSION} fully loaded.");
         }
     }

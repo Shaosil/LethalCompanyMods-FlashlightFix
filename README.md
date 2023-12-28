@@ -26,6 +26,13 @@ If this mod does <i>not</i> fix the extra described issues, I will do my best to
 # Changelog
 
 <ul>
+	<li><b>v1.0.4</b> - Fixing the helmet light and bulb</li>
+	<ul>
+		<li>Found and fixed a bug where the helmet light would be on at the same time as the flashlight, but only for non-owners.</li>
+		<li>Found and fixed a bug with the flashlight glass material being set incorrectly upon load.</li>
+		<li>Organizing my code a bit and separating the patch classes into their own files</li>
+	</ul>
+	&nbsp;
 	<li><b>v1.0.3</b> - Fixing more of my fixes</li>
 	<ul>
 		<li>Using the inverse teleporter while holding an active flashlight kept the beam on the player after being teleported.</li>
