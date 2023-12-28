@@ -26,6 +26,14 @@ If this mod does <i>not</i> fix the extra described issues, I will do my best to
 # Changelog
 
 <ul>
+	<li><b>v1.0.5</b> - Fixing compatibility with ReservedFlashlightSlot</li>
+	<ul>
+		<li>Fixed a minor bug that prevented any flashlights from turning on when holding multiple if the ReservedFlashlightSlot mod was installed.</li>
+		<ul>
+			<li>Note that ReservedFlashlightSlot (as of its v1.5.1) still has a bug that turns the 2nd+ flashlight back off when switching back to it. This is their bug, not mine :)</li>
+		</ul>
+	</ul>
+	&nbsp;
 	<li><b>v1.0.4</b> - Fixing the helmet light and bulb</li>
 	<ul>
 		<li>Found and fixed a bug where the helmet light would be on at the same time as the flashlight, but only for non-owners.</li>

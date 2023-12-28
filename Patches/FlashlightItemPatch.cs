@@ -76,7 +76,7 @@ namespace FlashlightFix.Patches
                 // If we are turning on a flashlight, make sure we turn off all player helmet lights since one may have been on from the above fix
                 for (int i = 0; i < __instance.playerHeldBy.ItemSlots.Length; i++)
                 {
-                    if (!(__instance.playerHeldBy.ItemSlots[i] is FlashlightItem otherFlashlight) || otherFlashlight == __instance)
+                    if (!(__instance.playerHeldBy.ItemSlots[i] is FlashlightItem otherFlashlight) || otherFlashlight == __instance || !otherFlashlight.isBeingUsed)
                     {
                         continue;
                     }
