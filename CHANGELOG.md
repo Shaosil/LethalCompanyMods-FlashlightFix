@@ -1,5 +1,8 @@
 # Changelog
 
+### v1.0.7 - Quick fix for the keybind spam
+* Fixed a spammy error message that occurred when ToggleShortcut was set to "None"
+
 ### v1.0.6 - Fixing laser pointer and adding toggle
 * Fixed the laser pointer acting as a flashlight (it technically is one in the code) when equipping it.
 * Stopped active pocketed flashlights from turning off when activating a laser poiner.

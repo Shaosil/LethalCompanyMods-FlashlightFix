@@ -76,7 +76,7 @@ namespace FlashlightFix.Patches
         [HarmonyPostfix]
         private static void Update(PlayerControllerB __instance)
         {
-            if (!__instance.IsOwner || __instance.inTerminalMenu || __instance.isTypingChat || !__instance.isPlayerControlled)
+            if (!__instance.IsOwner || ToggleShortcutKey == Key.None || __instance.inTerminalMenu || __instance.isTypingChat || !__instance.isPlayerControlled)
             {
                 return;
             }
