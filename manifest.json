@@ -1,6 +1,6 @@
 {
     "name": "FlashlightFix",
-    "version_number": "1.0.5",
+    "version_number": "1.0.6",
     "website_url": "https://github.com/Shaosil/LethalCompanyMods-FlashlightFix",
     "description": "Fixes annoying flashlight bugs like being toggled when it shouldn't be.",
     "dependencies": [
