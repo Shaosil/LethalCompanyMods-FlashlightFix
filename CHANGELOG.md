@@ -1,5 +1,10 @@
 # Changelog
 
+### v1.1.0 - Cleanup and rewrite
+* Rewrote most of the code since it was getting "bandaidy".
+	* This also fixed a bug with laser pointers showing double beams in some cases.
+* Removed DLLs from source control (just copy what you need manually from the LethalCompany directory if you build it yourself)
+
 ### v1.0.7 - Quick fix for the keybind spam
 * Fixed a spammy error message that occurred when ToggleShortcut was set to "None"
 
