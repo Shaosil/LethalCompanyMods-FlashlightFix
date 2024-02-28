@@ -23,16 +23,6 @@ namespace FlashlightFix.Patches
         {
             if (__instance.ItemSlots[slot] is FlashlightItem slotFlashlight)
             {
-                if (slotFlashlight.isBeingUsed)
-                {
-                    // Also make sure the helmet light turns off
-                    if (!slotFlashlight.CheckForLaser() || __instance.allHelmetLights[FlashlightItemPatch.LaserPointerTypeID].enabled)
-                    {
-                        Plugin.MLS.LogDebug($"Turning off helmet light after switching to an active flashlight.");
-                        __instance.helmetLight.enabled = false;
-                    }
-                }
-
                 // If the player already has an active flashlight (helmet lamp will be on) when picking up a new INACTIVE one, switch to the new one
                 if (__instance.IsOwner && !slotFlashlight.isBeingUsed && __instance.helmetLight.enabled && !slotFlashlight.CheckForLaser() && Plugin.OnlyOneLight.Value)
                 {
@@ -48,6 +38,9 @@ namespace FlashlightFix.Patches
                         }
                     }
                 }
+
+                // Ensure we are using the proper helmet light each time we switch to a flashlight
+                UpdateHelmetLight(__instance);
             }
         }
 
@@ -63,16 +56,46 @@ namespace FlashlightFix.Patches
             if (Keyboard.current[ToggleShortcutKey].wasPressedThisFrame)
             {
                 // Get the nearest flashlight with charge, whether it's held or in the inventory
-                var heldChargedFlashlights = __instance.ItemSlots.OfType<FlashlightItem>().Where(f => !f.CheckForLaser() && !f.insertedBattery.empty);
-                var targetFlashlight = heldChargedFlashlights.OrderByDescending(f => __instance.currentlyHeldObjectServer == f) // Held items first...
+                var targetFlashlight = __instance.ItemSlots.OfType<FlashlightItem>().Where(f => !f.insertedBattery.empty) // All charged flashlight items
+                    .OrderBy(f => f.CheckForLaser()) // Sort by non-lasers first
+                    .ThenByDescending(f => __instance.currentlyHeldObjectServer == f) // ... then by held items
                     .ThenByDescending(f => f.isBeingUsed) // ... then by active status
                     .ThenBy(f => f.flashlightTypeID) // ... then by pro, regular, laser
                     .FirstOrDefault();
+
+                // Active lasers in hand are toggling OFF first
 
                 if (targetFlashlight != null)
                 {
                     targetFlashlight.UseItemOnClient();
                 }
+            }
+        }
+
+        public static void UpdateHelmetLight(PlayerControllerB player)
+        {
+            // The helmet light should always be the first sorted flashlight that is on (lasers are sorted last, then pocketed flashlights are prioritized)
+            var activeLight = player.ItemSlots.OfType<FlashlightItem>()
+                .Where(f => f.isBeingUsed)
+                .OrderBy(f => f.CheckForLaser())
+                .ThenByDescending(f => f.isPocketed)
+                .FirstOrDefault();
+
+            // Update it if the current helmet light is something else
+            if (activeLight != null && player.helmetLight != player.allHelmetLights[activeLight.flashlightTypeID])
+            {
+                Plugin.MLS.LogDebug($"Updating helmet light to type {activeLight.flashlightTypeID} ({(activeLight.isPocketed ? "ON" : "OFF")}).");
+                player.ChangeHelmetLight(activeLight.flashlightTypeID, activeLight.isPocketed);
+                player.pocketedFlashlight = activeLight;
+            }
+
+            // Always make sure the helmet light state is correct
+            bool helmetLightShouldBeOn = activeLight != null && activeLight.isBeingUsed && activeLight.isPocketed;
+            if (player.helmetLight != null && player.helmetLight.enabled != helmetLightShouldBeOn)
+            {
+                // Toggle helmet light here if needed
+                Plugin.MLS.LogDebug($"Toggling helmet light {(helmetLightShouldBeOn ? "on" : "off")}.");
+                player.helmetLight.enabled = helmetLightShouldBeOn;
             }
         }
     }

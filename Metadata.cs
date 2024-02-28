@@ -4,6 +4,6 @@
     {
         public const string GUID = "ShaosilGaming.FlashlightFix";
         public const string PLUGIN_NAME = "FlashlightFix";
-        public const string VERSION = "1.1.0";
+        public const string VERSION = "1.1.1";
     }
 }

@@ -60,41 +60,25 @@ namespace FlashlightFix.Patches
             }
         }
 
-        [HarmonyPatch(typeof(FlashlightItem), "PocketItem")]
-        [HarmonyPatch(typeof(FlashlightItem), nameof(PocketFlashlightClientRpc))]
-        [HarmonyPrefix]
-        private static void PocketFlashlightClientRpc(FlashlightItem __instance)
-        {
-            // Before we pocket, make sure we update the helmet lamp to the current type IF it is not on already (lasers can cause oddities)
-            if (!__instance.playerHeldBy.helmetLight.enabled && __instance.isBeingUsed)
-            {
-                Plugin.MLS.LogDebug($"Updating helmet lamp type to {__instance.flashlightTypeID} after an active pocket");
-                __instance.playerHeldBy.ChangeHelmetLight(__instance.flashlightTypeID, true);
-            }
-        }
-
         [HarmonyPatch(typeof(FlashlightItem), nameof(DiscardItem))]
         [HarmonyPostfix]
         private static void DiscardItem(FlashlightItem __instance, PlayerControllerB ___previousPlayerHeldBy)
         {
-            if (!__instance.isBeingUsed || !Plugin.OnlyOneLight.Value)
+            if (!Plugin.OnlyOneLight.Value)
             {
                 return;
             }
 
-            // If there is an active flashlight in the players inventory, turn the helmet light back on. Otherwise, activate one
-            var otherFlashlights = ___previousPlayerHeldBy.ItemSlots.Where(i => i is FlashlightItem f && !f.CheckForLaser() && !f.insertedBattery.empty).Cast<FlashlightItem>();
-            var activeFlashlight = otherFlashlights.FirstOrDefault(f => f.isBeingUsed);
+            // If there is an active flashlight in the players inventory (prioritize non lasers), turn on its helemet light
+            var otherFlashlight = ___previousPlayerHeldBy.ItemSlots.OfType<FlashlightItem>()
+                .Where(f => f != __instance && f.isBeingUsed)
+                .OrderBy(f => f.CheckForLaser())
+                .FirstOrDefault();
 
-            if (activeFlashlight != null)
+            if (otherFlashlight != null)
             {
-                Plugin.MLS.LogDebug($"Updating and enabling active helmet light to type {__instance.flashlightTypeID} after another flashlight was discarded.");
-                ___previousPlayerHeldBy.ChangeHelmetLight(activeFlashlight.flashlightTypeID, true);
-            }
-            else if (___previousPlayerHeldBy.IsOwner && otherFlashlights.Any())
-            {
-                Plugin.MLS.LogDebug("Turning another flashlight on after an active one was discarded");
-                otherFlashlights.First().UseItemOnClient();
+                Plugin.MLS.LogDebug("Turning active helmet light back on after a flashlight was discarded");
+                otherFlashlight.playerHeldBy.ChangeHelmetLight(otherFlashlight.flashlightTypeID, true);
             }
         }
 
@@ -112,45 +96,26 @@ namespace FlashlightFix.Patches
                 __instance.flashlightMesh.materials[1] = on ? __instance.bulbLight : __instance.bulbDark;
             }
 
-            // If there are no other active flashlights, turn helmet light off
-            if (!on && __instance.playerHeldBy != null && __instance.playerHeldBy.helmetLight.enabled && !__instance.playerHeldBy.ItemSlots.Any(i => i is FlashlightItem f && !f.CheckForLaser() && f.isBeingUsed))
+            if (__instance.playerHeldBy != null)
             {
-                Plugin.MLS.LogDebug("Turning off helmet light");
-                __instance.playerHeldBy.helmetLight.enabled = false;
-            }
-            else if (__instance.playerHeldBy != null && on)
-            {
-                // Update pocketed flashlight if needed
-                if (__instance.isPocketed && __instance.playerHeldBy.pocketedFlashlight != __instance)
+                if (on)
                 {
-                    Plugin.MLS.LogDebug("Updating pocketed flashlight");
-                    __instance.playerHeldBy.pocketedFlashlight = __instance;
-                }
-
-                // Make sure the owner changes the helmet light here since we stripped it out of EquipItem()
-                if (!__instance.CheckForLaser() || !__instance.playerHeldBy.helmetLight.enabled)
-                {
-                    Plugin.MLS.LogDebug($"Updating helmet light to type {__instance.flashlightTypeID} ({(on ? "ON" : "OFF")})");
-                    __instance.playerHeldBy.ChangeHelmetLight(__instance.flashlightTypeID, __instance.isPocketed);
-                }
-
-                if (Plugin.OnlyOneLight.Value && !__instance.CheckForLaser())
-                {
-                    if (!__instance.IsOwner)
-                    {
-                        return false;
-                    }
-
                     // Make sure no other flashlights in our inventory are on
-                    for (int i = 0; i < __instance.playerHeldBy.ItemSlots.Length; i++)
+                    if (__instance.IsOwner && Plugin.OnlyOneLight.Value && !__instance.CheckForLaser())
                     {
-                        if (__instance.playerHeldBy.ItemSlots[i] is FlashlightItem otherFlashlight && otherFlashlight != __instance && otherFlashlight.isBeingUsed && !otherFlashlight.CheckForLaser())
+                        for (int i = 0; i < __instance.playerHeldBy.ItemSlots.Length; i++)
                         {
-                            Plugin.MLS.LogDebug($"Flashlight in pocket slot {i} TURNING OFF after turning on a held flashlight");
-                            otherFlashlight.UseItemOnClient();
+                            if (__instance.playerHeldBy.ItemSlots[i] is FlashlightItem otherFlashlight && otherFlashlight != __instance && otherFlashlight.isBeingUsed && !otherFlashlight.CheckForLaser())
+                            {
+                                Plugin.MLS.LogDebug($"Flashlight in pocket slot {i} TURNING OFF after turning on a held flashlight");
+                                otherFlashlight.UseItemOnClient();
+                            }
                         }
                     }
                 }
+
+                // Always ensure helmet light is up to date
+                PlayerControllerBPatch.UpdateHelmetLight(__instance.playerHeldBy);
             }
 
             // Never call the original method

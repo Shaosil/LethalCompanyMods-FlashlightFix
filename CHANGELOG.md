@@ -1,5 +1,9 @@
 # Changelog
 
+### v1.1.1 - More cleanup and bug fixing
+* Removed and simplified more of my code.
+* Attempted to fix all instances of the ever-present "double beam" bug that kept showing up when switching through multiple types of active flashlights.
+
 ### v1.1.0 - Cleanup and rewrite
 * Rewrote most of the code since it was getting "bandaidy".
 	* This also fixed a bug with laser pointers showing double beams in some cases.
