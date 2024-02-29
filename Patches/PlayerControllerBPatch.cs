@@ -86,7 +86,6 @@ namespace FlashlightFix.Patches
             {
                 Plugin.MLS.LogDebug($"Updating helmet light to type {activeLight.flashlightTypeID} ({(activeLight.isPocketed ? "ON" : "OFF")}).");
                 player.ChangeHelmetLight(activeLight.flashlightTypeID, activeLight.isPocketed);
-                player.pocketedFlashlight = activeLight;
             }
 
             // Always make sure the helmet light state is correct
@@ -96,6 +95,13 @@ namespace FlashlightFix.Patches
                 // Toggle helmet light here if needed
                 Plugin.MLS.LogDebug($"Toggling helmet light {(helmetLightShouldBeOn ? "on" : "off")}.");
                 player.helmetLight.enabled = helmetLightShouldBeOn;
+
+                // Update pocket flashlight if needed
+                if (helmetLightShouldBeOn && player.pocketedFlashlight != activeLight)
+                {
+                    Plugin.MLS.LogDebug("Updating pocketed flashlight");
+                    player.pocketedFlashlight = activeLight;
+                }
             }
         }
     }

@@ -1,5 +1,9 @@
 # Changelog
 
+### v1.1.2 - Hotfix
+* Fixing a bug that spammed errors and caused several issues with interactions and the hotbar when using the toggle shortcut key in some situations.
+* Fixed other available flashlights not turning on if you discard an active one.
+
 ### v1.1.1 - More cleanup and bug fixing
 * Removed and simplified more of my code.
 * Attempted to fix all instances of the ever-present "double beam" bug that kept showing up when switching through multiple types of active flashlights.

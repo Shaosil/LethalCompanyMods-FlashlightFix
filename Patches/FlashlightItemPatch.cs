@@ -69,16 +69,24 @@ namespace FlashlightFix.Patches
                 return;
             }
 
-            // If there is an active flashlight in the players inventory (prioritize non lasers), turn on its helemet light
-            var otherFlashlight = ___previousPlayerHeldBy.ItemSlots.OfType<FlashlightItem>()
-                .Where(f => f != __instance && f.isBeingUsed)
-                .OrderBy(f => f.CheckForLaser())
-                .FirstOrDefault();
+            // If there is an active flashlight in the players inventory (prioritize non lasers), turn on its helemet light. This can happen if a helmet light was on last frame.
+            var otherFlashlights = ___previousPlayerHeldBy.ItemSlots.OfType<FlashlightItem>().Where(f => f != __instance);
+            var activeFlashlight = otherFlashlights.Where(f => f.isBeingUsed).OrderBy(f => f.CheckForLaser()).FirstOrDefault();
 
-            if (otherFlashlight != null)
+            if (activeFlashlight != null)
             {
                 Plugin.MLS.LogDebug("Turning active helmet light back on after a flashlight was discarded");
-                otherFlashlight.playerHeldBy.ChangeHelmetLight(otherFlashlight.flashlightTypeID, true);
+                activeFlashlight.playerHeldBy.ChangeHelmetLight(activeFlashlight.flashlightTypeID, true);
+            }
+            else if (__instance.isBeingUsed && ___previousPlayerHeldBy.IsOwner)
+            {
+                // Otherwise, if we have ANY charged flashlights (not lasers) in our inventory, turn one on
+                var otherFlashlight = otherFlashlights.FirstOrDefault(f => !f.CheckForLaser() && !f.insertedBattery.empty);
+                if (otherFlashlight != null)
+                {
+                    Plugin.MLS.LogDebug("Turning another flashlight on after an active one was discarded");
+                    otherFlashlight.UseItemOnClient();
+                }
             }
         }
 
