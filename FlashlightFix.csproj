@@ -12,40 +12,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="Assembly-CSharp">
-            <HintPath>DLLs\Assembly-CSharp.dll</HintPath>
-        </Reference>
-        <Reference Include="Unity.InputSystem">
-          <HintPath>DLLs\Unity.InputSystem.dll</HintPath>
-        </Reference>
-        <Reference Include="Unity.Netcode.Runtime">
-            <HintPath>DLLs\Unity.Netcode.Runtime.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine">
-            <HintPath>DLLs\UnityEngine.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.CoreModule">
-            <HintPath>DLLs\UnityEngine.CoreModule.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="DLLs\Assembly-CSharp.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="DLLs\Unity.Netcode.Runtime.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="DLLs\UnityEngine.CoreModule.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="DLLs\UnityEngine.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+      <Reference Include="UnityEngine">
+        <HintPath>DLLs\UnityEngine.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.CoreModule">
+        <HintPath>DLLs\UnityEngine.CoreModule.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
     <Target Name="CopyFilesToGamePath" AfterTargets="PostBuildEvent" Condition="$(Configuration) != 'Debug'">
         <Message Text="Copying DLL to $(GamePath)..." Importance="high" />
+        <MakeDir Directories="$(GamePath)" />
         <Exec Command="copy $(TargetPath) &quot;$(GamePath)&quot;" />
     </Target>
 

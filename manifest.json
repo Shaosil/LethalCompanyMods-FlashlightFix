@@ -1,9 +1,10 @@
 {
     "name": "FlashlightFix",
-    "version_number": "1.1.2",
+    "version_number": "1.2.0",
     "website_url": "https://github.com/Shaosil/LethalCompanyMods-FlashlightFix",
-    "description": "Fixes annoying flashlight bugs like being toggled when it shouldn't be.",
+    "description": "[Deprecated - Use GeneralImprovements] Fixes annoying flashlight bugs like being toggled when it shouldn't be.",
     "dependencies": [
-        "BepInEx-BepInExPack-5.4.2100"
+        "BepInEx-BepInExPack-5.4.2100",
+        "ShaosilGaming-GeneralImprovements-1.2.0"
     ]
 }
